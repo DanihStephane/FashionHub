@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillForge - Online Training Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        .sidebar.collapsed {
+            width: 70px;
+        }
+        .sidebar.collapsed .nav-text {
+            display: none;
+        }
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+        .sidebar.collapsed .nav-item {
+            justify-content: center;
+        }
+        .content {
+            transition: margin-left 0.3s ease;
+        }
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
+            z-index: 1;
+            border-radius: 0.5rem;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div class="sidebar bg-white text-gray-800 shadow-lg flex flex-col h-full" id="sidebar">
+            <div class="p-4 flex items-center space-x-3 border-b border-gray-200">
+                <div class="bg-indigo-600 p-2 rounded-lg">
+                    <i class="fas fa-graduation-cap text-white text-xl"></i>
+                </div>
+                <span class="logo-text font-bold text-xl text-indigo-600">SkillForge</span>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto py-4">
+                <div class="px-4 mb-6">
+                    <div class="relative">
+                        <input type="text" placeholder="Search..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                </div>
+                
+                <nav>
+                    <div class="px-2">
+                        <div class="nav-item flex items-center px-4 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg cursor-pointer transition-colors mb-1">
+                            <i class="fas fa-home text-lg w-6"></i>
+                            <span class="nav-text ml-3">Dashboard</span>
+                        </div>
+                        <div class="nav-item flex items-center px-4 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg cursor-pointer transition-colors mb-1">
+                            <i class="fas fa-book text-lg w-6"></i>
+                            <span class="nav-text ml-3">Courses</span>
+                        </div>
+                        <div class="nav-item flex items-center px-4 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg cursor-pointer transition-colors mb-1">
+                            <i class="fas fa-users text-lg w-6"></i>
+                            <span class="nav-text ml-3">Students</span>
+                        </div>
+                        <div class="nav-item flex items-center px-4 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg cursor-pointer transition-colors mb-1">
+                            <i class="fas fa-chart-line text-lg w-6"></i>
+                            <span class="nav-text ml-3">Analytics</span>
+                        </div>
+                        <div class="nav-item flex items-center px-4 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg cursor-pointer transition-colors mb-1">
+                            <i class="fas fa-comments text-lg w-6"></i>
+                            <span class="nav-text ml-3">Messages</span>
+                            <span class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">3</span>
+                        </div>
+                        <div class="nav-item flex items-center px-4 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg cursor-pointer transition-colors mb-1">
+                            <i class="fas fa-cog text-lg w-6"></i>
+                            <span class="nav-text ml-3">Settings</span>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t border-gray-200 mt-6 pt-4 px-4">
+                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 nav-text">My Courses</h3>
+                        <div class="space-y-1">
+                            <div class="nav-item flex items-center px-4 py-2 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg cursor-pointer transition-colors">
+                                <i class="fas fa-circle text-xs w-6 text-green-500"></i>
+                                <span class="nav-text ml-3 text-sm">Web Development</span>
+                            </div>
+                            <div class="nav-item flex items-center px-4 py-2 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg cursor-pointer transition-colors">
+                                <i class="fas fa-circle text-xs w-6 text-blue-500"></i>
+                                <span class="nav-text ml-3 text-sm">Data Science</span>
+                            </div>
+                            <div class="nav-item flex items-center px-4 py-2 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg cursor-pointer transition-colors">
+                                <i class="fas fa-circle text-xs w-6 text-purple-500"></i>
+                                <span class="nav-text ml-3 text-sm">UX Design</span>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex items-center">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="w-10 h-10 rounded-full object-cover">
+                    <div class="ml-3 nav-text">
+                        <p class="text-sm font-medium">Sarah Johnson</p>
+                        <p class="text-xs text-gray-500">Admin</p>
+                    </div>
+                    <button id="toggleSidebar" class="ml-auto text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="content flex-1 flex flex-col overflow-hidden">
+            <!-- Top Navigation -->
+            <header class="bg-white shadow-sm py-4 px-6 flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-2xl font-bold text-gray-800">Dashboard</h1>
+                    <div class="relative">
+                        <select class="appearance-none bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-indigo-500">
+                            <option>All Courses</option>
+                            <option>Web Development</option>
+                            <option>Data Science</option>
+                            <option>UX Design</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 text-gray-500 hover:text-gray-700 relative">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
+                    </button>
+                    
+                    <div class="dropdown relative">
+                        <button class="flex items-center space-x-2 focus:outline-none">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="w-8 h-8 rounded-full object-cover">
+                            <span class="hidden md:inline-block font-medium">Sarah Johnson</span>
+                            <i class="fas fa-chevron-down text-gray-500"></i>
+                        </button>
+                        <div class="dropdown-content mt-2 py-1">
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100"><i class="fas fa-user mr-2"></i> Profile</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100"><i class="fas fa-cog mr-2"></i> Settings</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100"><i class="fas fa-question-circle mr-2"></i> Help</a>
+                            <div class="border-t border-gray-200 my-1"></div>
+                            <a href="#" class="block px-4 py-2 text-red-500 hover:bg-gray-100"><i class="fas fa-sign-out-alt mr-2"></i> Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-y-auto p-6 bg-gray-50">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Total Students</p>
+                                <h3 class="text-2xl font-bold mt-1">1,248</h3>
+                                <p class="text-green-500 text-sm mt-2"><i class="fas fa-arrow-up mr-1"></i> 12% from last month</p>
+                            </div>
+                            <div class="bg-indigo-100 p-3 rounded-lg">
+                                <i class="fas fa-users text-indigo-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Active Courses</p>
+                                <h3 class="text-2xl font-bold mt-1">24</h3>
+                                <p class="text-green-500 text-sm mt-2"><i class="fas fa-arrow-up mr-1"></i> 3 new this month</p>
+                            </div>
+                            <div class="bg-green-100 p-3 rounded-lg">
+                                <i class="fas fa-book text-green-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Completion Rate</p>
+                                <h3 class="text-2xl font-bold mt-1">78%</h3>
+                                <p class="text-red-500 text-sm mt-2"><i class="fas fa-arrow-down mr-1"></i> 2% from last month</p>
+                            </div>
+                            <div class="bg-blue-100 p-3 rounded-lg">
+                                <i class="fas fa-percentage text-blue-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Revenue</p>
+                                <h3 class="text-2xl font-bold mt-1">$12,489</h3>
+                                <p class="text-green-500 text-sm mt-2"><i class="fas fa-arrow-up mr-1"></i> 8% from last month</p>
+                            </div>
+                            <div class="bg-purple-100 p-3 rounded-lg">
+                                <i class="fas fa-dollar-sign text-purple-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Courses Progress -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white rounded-xl shadow-sm p-6 lg:col-span-2">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-lg font-semibold">Course Progress</h2>
+                            <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">View All</button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div class="relative w-16 h-16">
+                                    <svg class="w-16 h-16" viewBox="0 0 36 36">
+                                        <path d="M18 2.0845
+                                          a 15.9155 15.9155 0 0 1 0 31.831
+                                          a 15.9155 15.9155 0 0 1 0 -31.831"
+                                          fill="none"
+                                          stroke="#e6e6e6"
+                                          stroke-width="3"
+                                          stroke-dasharray="100, 100"
+                                        />
+                                        <path d="M18 2.0845
+                                          a 15.9155 15.9155 0 0 1 0 31.831
+                                          a 15.9155 15.9155 0 0 1 0 -31.831"
+                                          fill="none"
+                                          stroke="#4f46e5"
+                                          stroke-width="3"
+                                          stroke-dasharray="75, 100"
+                                          class="progress-ring__circle"
+                                        />
+                                    </svg>
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <span class="text-xs font-bold">75%</span>
+                                    </div>
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <h3 class="font-medium">Advanced JavaScript</h3>
+                                    <p class="text-sm text-gray-500">12/16 lessons completed</p>
+                                    <div class="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                                        <div class="bg-indigo-600 h-1.5 rounded-full" style="width: 75%"></div>
+                                    </div>
+                                </div>
+                                <button class="text-indigo-600 hover:text-indigo-800">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="flex items-center p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div class="relative w-16 h-16">
+                                    <svg class="w-16 h-16" viewBox="0 0 36 36">
+                                        <path d="M18 2.0845
+                                          a 15.9155 15.9155 0 0 1 0 31.831
+                                          a 15.9155 15.9155 0 0 1 0 -31.831"
+                                          fill="none"
+                                          stroke="#e6e6e6"
+                                          stroke-width="3"
+                                          stroke-dasharray="100, 100"
+                                        />
+                                        <path d="M18 2.0845
+                                          a 15.9155 15.9155 0 0 1 0 31.831
+                                          a 15.9155 15.9155 0 0 1 0 -31.831"
+                                          fill="none"
+                                          stroke="#10b981"
+                                          stroke-width="3"
+                                          stroke-dasharray="45, 100"
+                                          class="progress-ring__circle"
+                                        />
+                                    </svg>
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <span class="text-xs font-bold">45%</span>
+                                    </div>
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <h3 class="font-medium">React Fundamentals</h3>
+                                    <p class="text-sm text-gray-500">9/20 lessons completed</p>
+                                    <div class="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                                        <div class="bg-green-500 h-1.5 rounded-full" style="width: 45%"></div>
+                                    </div>
+                                </div>
+                                <button class="text-indigo-600 hover:text-indigo-800">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="flex items-center p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div class="relative w-16 h-16">
+                                    <svg class="w-16 h-16" viewBox="0 0 36 36">
+                                        <path d="M18 2.0845
+                                          a 15.9155 15.9155 0 0 1 0 31.831
+                                          a 15.9155 15.9155 0 0 1 0 -31.831"
+                                          fill="none"
+                                          stroke="#e6e6e6"
+                                          stroke-width="3"
+                                          stroke-dasharray="100, 100"
+                                        />
+                                        <path d="M18 2.0845
+                                          a 15.9155 15.9155 0 0 1 0 31.831
+                                          a 15.9155 15.9155 0 0 1 0 -31.831"
+                                          fill="none"
+                                          stroke="#f59e0b"
+                                          stroke-width="3"
+                                          stroke-dasharray="90, 100"
+                                          class="progress-ring__circle"
+                                        />
+                                    </svg>
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <span class="text-xs font-bold">90%</span>
+                                    </div>
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <h3 class="font-medium">Node.js Backend</h3>
+                                    <p class="text-sm text-gray-500">18/20 lessons completed</p>
+                                    <div class="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                                        <div class="bg-yellow-500 h-1.5 rounded-full" style="width: 90%"></div>
+                                    </div>
+                                </div>
+                                <button class="text-indigo-600 hover:text-indigo-800">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Upcoming Events -->
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-lg font-semibold">Upcoming Events</h2>
+                            <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">View All</button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div class="flex items-start">
+                                    <div class="bg-indigo-100 p-2 rounded-lg">
+                                        <i class="fas fa-video text-indigo-600"></i>
+                                    </div>
+                                    <div class="ml-3 flex-1">
+                                        <h3 class="font-medium">Live Q&A Session</h3>
+                                        <p class="text-sm text-gray-500">Web Development Course</p>
+                                        <div class="flex items-center mt-2 text-sm text-gray-500">
+                                            <i class="far fa-clock mr-2"></i>
+                                            <span>Today, 3:00 PM</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div class="flex items-start">
+                                    <div class="bg-green-100 p-2 rounded-lg">
+                                        <i class="fas fa-tasks text-green-600"></i>
+                                    </div>
+                                    <div class="ml-3 flex-1">
+                                        <h3 class="font-medium">Project Submission</h3>
+                                        <p class="text-sm text-gray-500">React Fundamentals</p>
+                                        <div class="flex items-center mt-2 text-sm text-gray-500">
+                                            <i class="far fa-clock mr-2"></i>
+                                            <span>Tomorrow, 11:59 PM</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div class="flex items-start">
+                                    <div class="bg-purple-100 p-2 rounded-lg">
+                                        <i class="fas fa-chalkboard-teacher text-purple-600"></i>
+                                    </div>
+                                    <div class="ml-3 flex-1">
+                                        <h3 class="font-medium">New Course Launch</h3>
+                                        <p class="text-sm text-gray-500">Advanced CSS Techniques</p>
+                                        <div class="flex items-center mt-2 text-sm text-gray-500">
+                                            <i class="far fa-clock mr-2"></i>
+                                            <span>Friday, 10:00 AM</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div class="flex items-start">
+                                    <div class="bg-yellow-100 p-2 rounded-lg">
+                                        <i class="fas fa-certificate text-yellow-600"></i>
+                                    </div>
+                                    <div class="ml-3 flex-1">
+                                        <h3 class="font-medium">Certification Test</h3>
+                                        <p class="text-sm text-gray-500">JavaScript Mastery</p>
+                                        <div class="flex items-center mt-2 text-sm text-gray-500">
+                                            <i class="far fa-clock mr-2"></i>
+                                            <span>Next Monday, 9:00 AM</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Courses -->
+                <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-lg font-semibold">Recent Courses</h2>
+                        <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">View All</button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="course-card bg-white border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg">
+                            <div class="h-40 bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center">
+                                <i class="fas fa-laptop-code text-white text-5xl"></i>
+                            </div>
+                            <div class="p-5">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-bold text-lg">Web Development Bootcamp</h3>
+                                    <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full">New</span>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-4">Master HTML, CSS, JavaScript and modern frameworks in this comprehensive course.</p>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                        <span class="text-sm font-medium">4.8</span>
+                                        <span class="text-gray-500 text-sm mx-1">•</span>
+                                        <span class="text-gray-500 text-sm">128 students</span>
+                                    </div>
+                                    <span class="text-indigo-600 font-medium">$99</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="course-card bg-white border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg">
+                            <div class="h-40 bg-gradient-to-r from-blue-500 to-teal-400 flex items-center justify-center">
+                                <i class="fas fa-database text-white text-5xl"></i>
+                            </div>
+                            <div class="p-5">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-bold text-lg">Data Science Fundamentals</h3>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Popular</span>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-4">Learn Python, Pandas, NumPy and data visualization tools for data analysis.</p>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                        <span class="text-sm font-medium">4.9</span>
+                                        <span class="text-gray-500 text-sm mx-1">•</span>
+                                        <span class="text-gray-500 text-sm">256 students</span>
+                                    </div>
+                                    <span class="text-indigo-600 font-medium">$149</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="course-card bg-white border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg">
+                            <div class="h-40 bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                                <i class="fas fa-paint-brush text-white text-5xl"></i>
+                            </div>
+                            <div class="p-5">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-bold text-lg">UX/UI Design Masterclass</h3>
+                                    <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Trending</span>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-4">From wireframing to prototyping, learn the complete design process with Figma.</p>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                        <span class="text-sm font-medium">4.7</span>
+                                        <span class="text-gray-500 text-sm mx-1">•</span>
+                                        <span class="text-gray-500 text-sm">184 students</span>
+                                    </div>
+                                    <span class="text-indigo-600 font-medium">$129</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Students -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-lg font-semibold">Recent Students</h2>
+                        <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">View All</button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progress</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Active</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/men/32.jpg" alt="">
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Michael Johnson</div>
+                                                <div class="text-sm text-gray-500">michael@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">Web Development</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 72%"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 mt-1 block">72% completed</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        2 hours ago
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-3">Message</a>
+                                        <a href="#" class="text-gray-600 hover:text-gray-900">View</a>
+                                    </td>
+                                </tr>
+                                
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/women/63.jpg" alt="">
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Sarah Williams</div>
+                                                <div class="text-sm text-gray-500">sarah@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">Data Science</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-blue-500 h-2 rounded-full" style="width: 45%"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 mt-1 block">45% completed</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        1 day ago
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-3">Message</a>
+                                        <a href="#" class="text-gray-600 hover:text-gray-900">View</a>
+                                    </td>
+                                </tr>
+                                
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/men/76.jpg" alt="">
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Robert Chen</div>
+                                                <div class="text-sm text-gray-500">robert@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">UX/UI Design</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-purple-500 h-2 rounded-full" style="width: 88%"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 mt-1 block">88% completed</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        3 days ago
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-3">Message</a>
+                                        <a href="#" class="text-gray-600 hover:text-gray-900">View</a>
+                                    </td>
+                                </tr>
+                                
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/women/28.jpg" alt="">
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Emily Rodriguez</div>
+                                                <div class="text-sm text-gray-500">emily@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">JavaScript Mastery</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-yellow-500 h-2 rounded-full" style="width: 65%"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 mt-1 block">65% completed</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        1 week ago
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-3">Message</a>
+                                        <a href="#" class="text-gray-600 hover:text-gray-900">View</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Toggle sidebar
+        document.getElementById('toggleSidebar').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+            
+            const content = document.querySelector('.content');
+            if (sidebar.classList.contains('collapsed')) {
+                content.style.marginLeft = '70px';
+                this.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            } else {
+                content.style.marginLeft = '0';
+                this.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            }
+        });
+
+        // Simulate progress rings animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const circles = document.querySelectorAll('.progress-ring__circle');
+            const radius = 20;
+            const circumference = 2 * Math.PI * radius;
+            
+            circles.forEach(circle => {
+                const percent = parseInt(circle.parentElement.querySelector('span').textContent);
+                const offset = circumference - (percent / 100) * circumference;
+                circle.style.strokeDasharray = `${circumference} ${circumference}`;
+                circle.style.strokeDashoffset = offset;
+            });
+        });
+
+        // Dropdown menu functionality for mobile
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown')) {
+                const dropdowns = document.querySelectorAll('.dropdown-content');
+                dropdowns.forEach(dropdown => {
+                    dropdown.style.display = 'none';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
