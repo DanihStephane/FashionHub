@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FashionHub - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        .sidebar.collapsed {
+            width: 70px;
+        }
+        .sidebar.collapsed .nav-text {
+            display: none;
+        }
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+        .main-content {
+            transition: all 0.3s ease;
+        }
+        .main-content.expanded {
+            margin-left: 70px;
+        }
+        .chart-container {
+            height: 300px;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .product-card {
+            transition: all 0.3s ease;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
+            z-index: 1;
+            border-radius: 0.5rem;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div class="sidebar bg-indigo-800 text-white w-64 flex flex-col">
+            <!-- Logo -->
+            <div class="p-4 flex items-center justify-between border-b border-indigo-700">
+                <div class="flex items-center">
+                    <i class="fas fa-tshirt text-2xl mr-3"></i>
+                    <span class="logo-text text-xl font-bold">FashionHub</span>
+                </div>
+                <button id="toggleSidebar" class="text-white focus:outline-none">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="flex-1 overflow-y-auto py-4">
+                <div class="px-4 mb-8">
+                    <div class="text-xs uppercase text-indigo-400 font-semibold mb-2 px-2 nav-text">Main</div>
+                    <a href="#" class="flex items-center py-2 px-2 rounded-lg bg-indigo-700 text-white">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        <span class="nav-text">Dashboard</span>
+                    </a>
+                </div>
+                
+                <div class="px-4 mb-8">
+                    <div class="text-xs uppercase text-indigo-400 font-semibold mb-2 px-2 nav-text">Products</div>
+                    <a href="#" class="flex items-center py-2 px-2 rounded-lg hover:bg-indigo-700 text-white mb-2">
+                        <i class="fas fa-box-open mr-3"></i>
+                        <span class="nav-text">All Products</span>
+                    </a>
+                    <a href="#" class="flex items-center py-2 px-2 rounded-lg hover:bg-indigo-700 text-white mb-2">
+                        <i class="fas fa-plus-circle mr-3"></i>
+                        <span class="nav-text">Add New</span>
+                    </a>
+                    <a href="#" class="flex items-center py-2 px-2 rounded-lg hover:bg-indigo-700 text-white">
+                        <i class="fas fa-tags mr-3"></i>
+                        <span class="nav-text">Categories</span>
+                    </a>
+                </div>
+                
+                <div class="px-4 mb-8">
+                    <div class="text-xs uppercase text-indigo-400 font-semibold mb-2 px-2 nav-text">Sales</div>
+                    <a href="#" class="flex items-center py-2 px-2 rounded-lg hover:bg-indigo-700 text-white mb-2">
+                        <i class="fas fa-shopping-cart mr-3"></i>
+                        <span class="nav-text">Orders</span>
+                    </a>
+                    <a href="#" class="flex items-center py-2 px-2 rounded-lg hover:bg-indigo-700 text-white mb-2">
+                        <i class="fas fa-exchange-alt mr-3"></i>
+                        <span class="nav-text">Transactions</span>
+                    </a>
+                    <a href="#" class="flex items-center py-2 px-2 rounded-lg hover:bg-indigo-700 text-white">
+                        <i class="fas fa-chart-line mr-3"></i>
+                        <span class="nav-text">Reports</span>
+                    </a>
+                </div>
+                
+                <div class="px-4 mb-8">
+                    <div class="text-xs uppercase text-indigo-400 font-semibold mb-2 px-2 nav-text">Customers</div>
+                    <a href="#" class="flex items-center py-2 px-2 rounded-lg hover:bg-indigo-700 text-white mb-2">
+                        <i class="fas fa-users mr-3"></i>
+                        <span class="nav-text">All Customers</span>
+                    </a>
+                    <a href="#" class="flex items-center py-2 px-2 rounded-lg hover:bg-indigo-700 text-white">
+                        <i class="fas fa-comments mr-3"></i>
+                        <span class="nav-text">Reviews</span>
+                    </a>
+                </div>
+            </nav>
+            
+            <!-- User Profile -->
+            <div class="p-4 border-t border-indigo-700">
+                <div class="flex items-center">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="w-10 h-10 rounded-full">
+                    <div class="ml-3 nav-text">
+                        <div class="font-medium">Sarah Johnson</div>
+                        <div class="text-xs text-indigo-300">Admin</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content flex-1 overflow-y-auto">
+            <!-- Top Navigation -->
+            <header class="bg-white shadow-sm py-4 px-6 flex items-center justify-between">
+                <h1 class="text-2xl font-bold text-gray-800">Dashboard</h1>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search..." class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    
+                    <div class="relative">
+                        <button class="text-gray-600 hover:text-gray-900 focus:outline-none">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                        </button>
+                    </div>
+                    
+                    <div class="dropdown relative">
+                        <button class="flex items-center space-x-2 focus:outline-none">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="w-8 h-8 rounded-full">
+                            <span class="hidden md:inline-block">Sarah J.</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <div class="dropdown-content mt-2 py-2">
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Dashboard Content -->
+            <main class="p-6">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6 flex items-center">
+                        <div class="p-3 rounded-full bg-indigo-100 text-indigo-600 mr-4">
+                            <i class="fas fa-shopping-bag text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Total Products</p>
+                            <h3 class="text-2xl font-bold">1,248</h3>
+                            <p class="text-xs text-green-500">+12% from last month</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow p-6 flex items-center">
+                        <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
+                            <i class="fas fa-shopping-cart text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Today's Orders</p>
+                            <h3 class="text-2xl font-bold">86</h3>
+                            <p class="text-xs text-green-500">+5% from yesterday</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow p-6 flex items-center">
+                        <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
+                            <i class="fas fa-dollar-sign text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Today's Revenue</p>
+                            <h3 class="text-2xl font-bold">$4,285</h3>
+                            <p class="text-xs text-red-500">-2% from yesterday</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow p-6 flex items-center">
+                        <div class="p-3 rounded-full bg-purple-100 text-purple-600 mr-4">
+                            <i class="fas fa-users text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">New Customers</p>
+                            <h3 class="text-2xl font-bold">24</h3>
+                            <p class="text-xs text-green-500">+8% from last week</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Charts Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Sales Chart -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-semibold">Sales Overview</h2>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 text-xs bg-indigo-100 text-indigo-700 rounded-full">Week</button>
+                                <button class="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">Month</button>
+                                <button class="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">Year</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Revenue Chart -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-semibold">Revenue Sources</h2>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 text-xs bg-indigo-100 text-indigo-700 rounded-full">This Month</button>
+                                <button class="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">Last Month</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Orders & Top Products -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Recent Orders -->
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <div class="p-6 border-b border-gray-200">
+                            <h2 class="text-lg font-semibold">Recent Orders</h2>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600">#FH-4872</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Michael Brown</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Delivered</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$128.50</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600">#FH-4871</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jessica Wilson</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Processing</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$89.99</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600">#FH-4870</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">David Miller</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Shipped</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$215.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600">#FH-4869</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Sarah Johnson</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Cancelled</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$64.99</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="p-4 border-t border-gray-200 text-center">
+                            <a href="#" class="text-indigo-600 hover:text-indigo-800 font-medium">View All Orders</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Top Products -->
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <div class="p-6 border-b border-gray-200">
+                            <h2 class="text-lg font-semibold">Top Selling Products</h2>
+                        </div>
+                        <div class="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="product-card bg-white rounded-lg shadow p-4 border border-gray-100">
+                                <div class="flex items-center">
+                                    <img src="https://via.placeholder.com/80x80" alt="Product" class="w-16 h-16 rounded-md object-cover">
+                                    <div class="ml-4">
+                                        <h3 class="font-medium text-gray-900">Denim Jacket</h3>
+                                        <p class="text-sm text-gray-500">$59.99</p>
+                                        <div class="flex items-center mt-1">
+                                            <div class="flex items-center text-yellow-400">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star-half-alt"></i>
+                                            </div>
+                                            <span class="text-xs text-gray-500 ml-1">(128)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="product-card bg-white rounded-lg shadow p-4 border border-gray-100">
+                                <div class="flex items-center">
+                                    <img src="https://via.placeholder.com/80x80" alt="Product" class="w-16 h-16 rounded-md object-cover">
+                                    <div class="ml-4">
+                                        <h3 class="font-medium text-gray-900">Summer Dress</h3>
+                                        <p class="text-sm text-gray-500">$39.99</p>
+                                        <div class="flex items-center mt-1">
+                                            <div class="flex items-center text-yellow-400">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="far fa-star"></i>
+                                            </div>
+                                            <span class="text-xs text-gray-500 ml-1">(95)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="product-card bg-white rounded-lg shadow p-4 border border-gray-100">
+                                <div class="flex items-center">
+                                    <img src="https://via.placeholder.com/80x80" alt="Product" class="w-16 h-16 rounded-md object-cover">
+                                    <div class="ml-4">
+                                        <h3 class="font-medium text-gray-900">Slim Fit Jeans</h3>
+                                        <p class="text-sm text-gray-500">$49.99</p>
+                                        <div class="flex items-center mt-1">
+                                            <div class="flex items-center text-yellow-400">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                            <span class="text-xs text-gray-500 ml-1">(142)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="product-card bg-white rounded-lg shadow p-4 border border-gray-100">
+                                <div class="flex items-center">
+                                    <img src="https://via.placeholder.com/80x80" alt="Product" class="w-16 h-16 rounded-md object-cover">
+                                    <div class="ml-4">
+                                        <h3 class="font-medium text-gray-900">Casual T-Shirt</h3>
+                                        <p class="text-sm text-gray-500">$24.99</p>
+                                        <div class="flex items-center mt-1">
+                                            <div class="flex items-center text-yellow-400">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star-half-alt"></i>
+                                                <i class="far fa-star"></i>
+                                            </div>
+                                            <span class="text-xs text-gray-500 ml-1">(87)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4 border-t border-gray-200 text-center">
+                            <a href="#" class="text-indigo-600 hover:text-indigo-800 font-medium">View All Products</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Reviews -->
+                <div class="bg-white rounded-lg shadow overflow-hidden mb-6">
+                    <div class="p-6 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold">Recent Customer Reviews</h2>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <div class="p-6">
+                            <div class="flex items-start">
+                                <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="User" class="w-10 h-10 rounded-full">
+                                <div class="ml-4">
+                                    <div class="flex items-center">
+                                        <h4 class="font-medium">Emily Wilson</h4>
+                                        <div class="flex items-center ml-4 text-yellow-400">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                    </div>
+                                    <p class="text-sm text-gray-500 mt-1">Posted on June 12, 2023</p>
+                                    <p class="mt-2 text-gray-700">"The denim jacket is amazing! Fits perfectly and the quality is outstanding. Will definitely buy again!"</p>
+                                    <div class="mt-3 flex items-center text-sm text-gray-500">
+                                        <span class="mr-4">Product: Denim Jacket</span>
+                                        <span>Order #FH-4865</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="flex items-start">
+                                <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="User" class="w-10 h-10 rounded-full">
+                                <div class="ml-4">
+                                    <div class="flex items-center">
+                                        <h4 class="font-medium">Robert Taylor</h4>
+                                        <div class="flex items-center ml-4 text-yellow-400">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                    </div>
+                                    <p class="text-sm text-gray-500 mt-1">Posted on June 10, 2023</p>
+                                    <p class="mt-2 text-gray-700">"Good quality t-shirt, but the color was slightly different than shown in the picture. Still happy with the purchase overall."</p>
+                                    <div class="mt-3 flex items-center text-sm text-gray-500">
+                                        <span class="mr-4">Product: Casual T-Shirt</span>
+                                        <span>Order #FH-4862</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 border-t border-gray-200 text-center">
+                        <a href="#" class="text-indigo-600 hover:text-indigo-800 font-medium">View All Reviews</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Toggle sidebar
+        document.getElementById('toggleSidebar').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('collapsed');
+            document.querySelector('.main-content').classList.toggle('expanded');
+        });
+
+        // Initialize charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sales Chart
+            const salesCtx = document.getElementById('salesChart').getContext('2d');
+            const salesChart = new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Sales',
+                        data: [12500, 19000, 17000, 22000, 21000, 25000],
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            const revenueChart = new Chart(revenueCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Men', 'Women', 'Kids', 'Accessories'],
+                    datasets: [{
+                        data: [35, 40, 15, 10],
+                        backgroundColor: [
+                            'rgba(79, 70, 229, 0.8)',
+                            'rgba(192, 132, 252, 0.8)',
+                            'rgba(110, 231, 183, 0.8)',
+                            'rgba(252, 165, 165, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(79, 70, 229, 1)',
+                            'rgba(192, 132, 252, 1)',
+                            'rgba(110, 231, 183, 1)',
+                            'rgba(252, 165, 165, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+
+            // Add fade-in animation to elements
+            const elements = document.querySelectorAll('.product-card, table tr, .bg-white');
+            elements.forEach((el, index) => {
+                el.classList.add('fade-in');
+                el.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>
